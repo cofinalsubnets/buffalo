@@ -1,4 +1,4 @@
-buffallo
+buffalo
 ========
 
 X11 clipboard registers daemon.
