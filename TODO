@@ -1,0 +1,4 @@
+- set the CLIPBOARD selection as well as PRIMARY
+- add support for INCR transfers
+- read/write registers from/to disk
+- buffalo -h
