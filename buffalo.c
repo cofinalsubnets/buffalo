@@ -27,7 +27,8 @@ enum Atom {
   BUFFALO_DAEMON,
   WINDOW,
   ATOM,
-  TARGETS
+  TARGETS,
+  CLIPBOARD
 };
 
 struct Internable {
@@ -102,7 +103,8 @@ struct Internable internable_atoms[] = {
   I(BUFFALO_DAEMON),
   I(WINDOW),
   I(ATOM),
-  I(TARGETS)
+  I(TARGETS),
+  I(CLIPBOARD)
 };
 #undef I
 
@@ -159,7 +161,8 @@ void handle_paste(xcb_generic_event_t *gev) {
   uint32_t reg = ((xcb_client_message_event_t*) gev)->data.data32[0]; // really?
   if (registers[reg].data) {
     active_register = registers + reg;
-    xcb_set_selection_owner(X, win, atoms[PRIMARY], XCB_CURRENT_TIME);
+    xcb_set_selection_owner(X, win, atoms[PRIMARY],   XCB_CURRENT_TIME);
+//    xcb_set_selection_owner(X, win, atoms[CLIPBOARD], XCB_CURRENT_TIME);
   }
 }
 
@@ -221,12 +224,12 @@ void handle_selection_request(xcb_generic_event_t *gev) {
     } else if (ev->target == atoms[TARGETS]) {
 
       xcb_atom_t ok_targs[] = { atoms[TEXT], atoms[STRING], atoms[UTF8_STRING] };
-      xcb_change_property(X, XCB_PROP_MODE_REPLACE, ev->requestor,
-          atoms[TARGETS], atoms[ATOM], 32, LENGTH(ok_targs), ok_targs);
+      xcb_change_property(X, XCB_PROP_MODE_REPLACE, response.requestor,
+          response.property, atoms[ATOM], 32, LENGTH(ok_targs), ok_targs);
     } else response.property = XCB_NONE;
   } else response.property = XCB_NONE;
 
-  xcb_send_event(X, 0, response.requestor,XCB_EVENT_MASK_NO_EVENT, (char*) &response);
+  xcb_send_event(X, 0, response.requestor, XCB_EVENT_MASK_NO_EVENT, (char*) &response);
 }
 
 void set_register(Register *reg, char *data) {
